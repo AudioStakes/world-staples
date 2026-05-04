@@ -14,6 +14,7 @@ gem "actionview", RAILS_VERSION
 gem "sqlite3", "~> 2.9", ">= 2.9.3"
 gem "puma", "~> 8.0", ">= 8.0.0"
 gem "bootsnap", "~> 1.23", ">= 1.23.0", require: false
+gem "roo"
 
 group :development, :test do
   gem "debug", "~> 1.11", ">= 1.11.1", platforms: %i[mri windows], require: "debug/prelude"
