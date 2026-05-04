@@ -6,8 +6,9 @@ module Staples
 
     Result = Data.define(:staple, :score, :matched_terms, :matched_search_terms)
 
-    def self.call(query, limit: DEFAULT_LIMIT, filters: {})
-      new(query:, limit:, filters:).call
+    def self.call(query, limit: DEFAULT_LIMIT, filters: nil, **filter_options)
+      merged_filters = (filters || {}).merge(filter_options)
+      new(query:, limit:, filters: merged_filters).call
     end
 
     def initialize(query:, limit: DEFAULT_LIMIT, filters: {})
@@ -37,7 +38,7 @@ module Staples
         Result.new(
           staple: staple,
           score: data[:score],
-          matched_terms: data[:matched_terms].to_a.sort,
+          matched_terms: query_terms.select { |term| data[:matched_terms].include?(term) },
           matched_search_terms: data[:matched_search_terms]
         )
       end

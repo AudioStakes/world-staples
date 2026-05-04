@@ -54,7 +54,7 @@ module Staples
 
       result = Search.call("米 発酵 蒸す").first
       assert_equal staple, result.staple
-      assert_equal [ "fermented", "rice", "蒸す" ], result.matched_terms.sort
+      assert_equal [ "rice", "fermented", "蒸す" ], result.matched_terms
     end
 
     test "score ordering favors more matches" do
@@ -90,6 +90,17 @@ module Staples
       assert_equal [ fermented ], results.map(&:staple)
     end
 
+
+    test "direct filter option also works" do
+      fermented = create_staple!(name_ja: "イドゥリ", fermented: true)
+      plain = create_staple!(name_ja: "ご飯", fermented: false, source_id: 8_888)
+      [ fermented, plain ].each do |staple|
+        SearchTerm.create!(staple:, term: "rice", normalized_term: "rice", source_type: "Staple", source_id: staple.id, source_column: "name_ja", weight: 1)
+      end
+
+      results = Search.call("rice", fermented: true)
+      assert_equal [ fermented ], results.map(&:staple)
+    end
     test "region filter" do
       staple = create_staple!(name_ja: "ご飯")
       region = Region.create!(name_en: "East Asia", name_ja: "東アジア")
