@@ -1,6 +1,7 @@
 class CreateStapleCatalogFoundation < ActiveRecord::Migration[8.1]
   def change
     create_table :staples do |t|
+      t.integer :source_id, null: false
       t.string :name_ja, null: false
       t.string :name_en
       t.string :local_name
@@ -14,6 +15,7 @@ class CreateStapleCatalogFoundation < ActiveRecord::Migration[8.1]
       t.integer :source_row_number
       t.timestamps
     end
+    add_index :staples, :source_id, unique: true
     add_index :staples, :name_ja
     add_index :staples, :name_en
     add_index :staples, :review_status

@@ -7,7 +7,9 @@ synonyms = {
 }
 
 synonyms.each do |term, normalized|
-  Synonym.find_or_create_by!(term:, locale: "ja") { |s| s.normalized_term = normalized }
+  synonym = Synonym.find_or_initialize_by(term:, locale: "ja")
+  synonym.normalized_term = normalized
+  synonym.save!
 end
 
 csv_path = Rails.root.join("db/seeds/staple_catalog.csv")
