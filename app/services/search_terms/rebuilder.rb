@@ -2,12 +2,18 @@ require "set"
 
 module SearchTerms
   class Rebuilder
-    def self.call(staple) = new(staple).call
+    def self.call(staple, synonym_map: preload_synonym_map) = new(staple, synonym_map:).call
 
-    def initialize(staple)
+    def self.preload_synonym_map
+      Synonym.all.each_with_object({}) do |synonym, map|
+        map[[ synonym.locale, synonym.term ]] = synonym.normalized_term
+      end
+    end
+
+    def initialize(staple, synonym_map:)
       @staple = staple
       @seen = Set.new
-      @synonym_map = build_synonym_map
+      @synonym_map = synonym_map
     end
 
     def call
@@ -22,12 +28,6 @@ module SearchTerms
     private
 
     attr_reader :staple, :seen, :synonym_map
-
-    def build_synonym_map
-      Synonym.all.each_with_object({}) do |synonym, map|
-        map[[ synonym.locale, synonym.term ]] = synonym.normalized_term
-      end
-    end
 
     def add_staple_terms
       { name_ja: staple.name_ja, name_en: staple.name_en, local_name: staple.local_name }.each do |column, value|
@@ -53,12 +53,20 @@ module SearchTerms
     def add_term(raw, source_type, source_id, source_column, weight)
       return if raw.blank?
 
-      normalized = normalize_with_synonym(raw)
+      normalized = normalize_with_synonym(raw, locale: locale_for(source_column))
       key = [ normalized, source_type, source_id, source_column ]
       return if seen.include?(key)
 
       seen << key
       staple.search_terms.create!(term: raw, normalized_term: normalized, source_type:, source_id:, source_column:, weight:)
+    end
+
+    def locale_for(source_column)
+      case source_column.to_s
+      when /_en\z/ then "en"
+      when /_ja\z/ then "ja"
+      # nil is intentional: normalize_with_synonym falls back to locale-agnostic (nil-locale) synonyms
+      end
     end
 
     def normalize_with_synonym(raw, locale: nil)

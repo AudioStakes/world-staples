@@ -9,22 +9,22 @@ module Imports
     def call
       raise ArgumentError, "CSV file not found: #{@path}" unless @path.exist?
 
+      synonym_map = SearchTerms::Rebuilder.preload_synonym_map
       CSV.foreach(@path, headers: true, encoding: "UTF-8").with_index(2) do |row, row_number|
-        import_row(row.to_h, row_number)
+        import_row(row.to_h, row_number, synonym_map: synonym_map)
       end
     end
 
     private
 
-    def import_row(row, row_number)
+    def import_row(row, row_number, synonym_map:)
       source_id = parse_source_id(row["id"], row_number)
       staple = Staple.find_or_initialize_by(source_id: source_id)
       staple.assign_attributes(
         name_ja: row["name_ja"], name_en: row["name_en"], local_name: row["local_name"],
-        fermented: parse_boolean(row["fermented"], row_number), description: row["notes"], note: row["note"],
+        fermented: parse_boolean(row["fermented"], row_number), description: row["notes"],
         source_url: row["source_url"], confidence: row["confidence"].presence,
-        review_status: row["review_status"].presence || "starter", source_row_number: row_number,
-        category: row["category"]
+        review_status: row["review_status"].presence || "starter", source_row_number: row_number
       )
       staple.save!
 
@@ -55,7 +55,7 @@ module Imports
       end
 
       make_aliases(staple, row)
-      SearchTerms::Rebuilder.call(staple)
+      SearchTerms::Rebuilder.call(staple, synonym_map: synonym_map)
     end
 
 

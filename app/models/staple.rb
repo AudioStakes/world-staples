@@ -29,4 +29,5 @@ class Staple < ApplicationRecord
   has_many :search_keywords, through: :search_keyword_taggings, source: :taggable, source_type: "SearchKeyword"
 
   validates :name_ja, presence: true
+  validates :source_id, presence: true, uniqueness: true
 end
