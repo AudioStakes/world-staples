@@ -10,9 +10,9 @@ synonyms.each do |term, normalized|
   Synonym.find_or_create_by!(term:, locale: "ja") { |s| s.normalized_term = normalized }
 end
 
-xlsx_path = Rails.root.join("db/seeds/world_staple_catalog_starter.xlsx")
-if xlsx_path.exist?
-  Imports::StapleCatalogImporter.new(path: xlsx_path).call
+csv_path = Rails.root.join("db/seeds/staple_catalog.csv")
+if csv_path.exist?
+  Imports::StapleCatalogImporter.new(path: csv_path).call
 else
-  Rails.logger.warn("Skipping staple catalog import: #{xlsx_path} not found")
+  Rails.logger.warn("Skipping staple catalog import: db/seeds/staple_catalog.csv not found")
 end

@@ -5,10 +5,11 @@ class Tagging < ApplicationRecord
   ].freeze
 
   belongs_to :staple
-  belongs_to :taggable, polymorphic: true
+  belongs_to :taggable, polymorphic: true, optional: true
 
+  validates :staple, presence: true
   validates :taggable_type, inclusion: { in: ALLOWED_TAGGABLE_TYPES }
-  validates :taggable_id, uniqueness: { scope: %i[staple_id taggable_type] }
+  validates :taggable_id, presence: true, uniqueness: { scope: %i[staple_id taggable_type] }
 
   validate :taggable_record_exists
 
