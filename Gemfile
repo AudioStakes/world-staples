@@ -1,36 +1,27 @@
 source "https://rubygems.org"
 
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.3"
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
+ruby "4.0.3"
 
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+RAILS_VERSION = "8.1.3"
 
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "railties", RAILS_VERSION
+gem "activesupport", RAILS_VERSION
+gem "activemodel", RAILS_VERSION
+gem "activerecord", RAILS_VERSION
+gem "actionpack", RAILS_VERSION
+gem "actionview", RAILS_VERSION
 
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
+gem "sqlite3", "~> 2.9", ">= 2.9.3"
+gem "puma", "~> 8.0", ">= 8.0.0"
+gem "bootsnap", "~> 1.23", ">= 1.23.0", require: false
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
+  gem "debug", "~> 1.11", ">= 1.11.1", platforms: %i[mri windows], require: "debug/prelude"
+  gem "bundler-audit", "~> 0.9", ">= 0.9.3", require: false
+  gem "brakeman", "~> 8.0", ">= 8.0.4", require: false
+  gem "rubocop-rails-omakase", "~> 1.1", ">= 1.1.0", require: false
 end
 
 group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
+  gem "web-console", "~> 4.3", ">= 4.3.0"
 end
