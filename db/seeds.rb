@@ -1,9 +1,20 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+synonyms = {
+  "米" => "rice", "ごはん" => "rice", "ライス" => "rice", "小麦" => "wheat",
+  "トウモロコシ" => "maize", "とうもろこし" => "maize", "コーン" => "maize", "キャッサバ" => "cassava",
+  "タピオカ" => "cassava", "麺" => "noodle", "めん" => "noodle", "薄焼き" => "flatbread",
+  "発酵" => "fermented", "蒸す" => "steamed", "茹でる" => "boiled", "ゆでる" => "boiled",
+  "酸っぱい" => "sour", "酸味" => "sour"
+}
+
+synonyms.each do |term, normalized|
+  synonym = Synonym.find_or_initialize_by(term:, locale: "ja")
+  synonym.normalized_term = normalized
+  synonym.save!
+end
+
+csv_path = Rails.root.join("db/seeds/staple_catalog.csv")
+if csv_path.exist?
+  Imports::StapleCatalogImporter.new(path: csv_path).call
+else
+  Rails.logger.warn("Skipping staple catalog import: db/seeds/staple_catalog.csv not found")
+end

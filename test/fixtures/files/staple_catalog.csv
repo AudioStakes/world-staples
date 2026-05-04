@@ -1,0 +1,4 @@
+id,name_ja,name_en,local_name,ingredient_family,base_ingredients,form,shape,processing,cooking_method,fermented,texture,region,country_area,served_with,staple_level,search_keywords,similar_foods,notes,source_url,confidence,review_status
+1,ご飯,Cooked rice,,grain,rice,grain dish,粒状,精米,炊く,false,ふっくら/粒状,East Asia,"Japan, Korea","おかず, 汁物",primary_staple,"米,ごはん,炊く",粥,米を炊いた最も基本的な主食形態,https://example.com/rice,0.9,starter
+2,粥,Rice porridge,Congee,grain,rice,porridge,粥,精米,煮る,false,柔らかい/とろみ,East Asia,China,"漬物, 肉",primary_or_secondary,"米,粥,煮る",ご飯,中国では日常的な主食・朝食としても扱われる,https://example.com/congee,0.88,starter
+3,イドゥリ,Idli,Idli,grain,"rice, urad dal",steamed cake,丸い/厚い,"発酵, 製粉",蒸す,true,ふわふわ/酸味,South Asia,India,"サンバル, チャツネ",primary_staple,"米,発酵,蒸す",ドーサ,南インドの発酵生地を蒸した主食,https://example.com/idli,0.86,starter
