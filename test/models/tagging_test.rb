@@ -2,7 +2,7 @@ require "test_helper"
 
 class TaggingTest < ActiveSupport::TestCase
   test "validation rules" do
-    staple = Staple.create!(name_ja: "米")
+    staple = Staple.create!(source_id: 1, name_ja: "米")
     ingredient = Ingredient.create!(name_en: "rice")
     assert Tagging.new(staple:, taggable: ingredient).valid?
 
@@ -16,7 +16,7 @@ class TaggingTest < ActiveSupport::TestCase
     missing = Tagging.new(staple:, taggable_type: "Ingredient", taggable_id: 999_999)
     assert_not missing.valid?
 
-    other = Staple.create!(name_ja: "パン")
+    other = Staple.create!(source_id: 2, name_ja: "パン")
     assert Tagging.new(staple: other, taggable: ingredient).valid?
   end
 end

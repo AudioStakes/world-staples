@@ -2,7 +2,7 @@ require "test_helper"
 
 class StapleAliasTest < ActiveSupport::TestCase
   test "requires name and belongs to staple and normalizes" do
-    staple = Staple.create!(name_ja: "米")
+    staple = Staple.create!(source_id: 1, name_ja: "米")
     model = StapleAlias.new(staple:, name: " ＲＩＣＥ ")
     assert model.valid?
     model.save!

@@ -25,7 +25,7 @@ module SearchTerms
 
     def build_synonym_map
       Synonym.all.each_with_object({}) do |synonym, map|
-        map[[synonym.locale, synonym.term]] = synonym.normalized_term
+        map[[ synonym.locale, synonym.term ]] = synonym.normalized_term
       end
     end
 
@@ -45,7 +45,7 @@ module SearchTerms
       taggable = tagging.taggable
       return if taggable.nil?
 
-      [["name_en", taggable.try(:name_en)], ["name_ja", taggable.try(:name_ja)], ["code", taggable.try(:code)], ["keyword", taggable.try(:keyword)]].each do |col, v|
+      [ [ "name_en", taggable.try(:name_en) ], [ "name_ja", taggable.try(:name_ja) ], [ "code", taggable.try(:code) ], [ "keyword", taggable.try(:keyword) ] ].each do |col, v|
         add_term(v, tagging.taggable_type, taggable.id, col, FeatureWeights.for(tagging.taggable_type))
       end
     end
@@ -54,7 +54,7 @@ module SearchTerms
       return if raw.blank?
 
       normalized = normalize_with_synonym(raw)
-      key = [normalized, source_type, source_id, source_column]
+      key = [ normalized, source_type, source_id, source_column ]
       return if seen.include?(key)
 
       seen << key
@@ -63,7 +63,7 @@ module SearchTerms
 
     def normalize_with_synonym(raw, locale: nil)
       normalized = TextNormalizer.normalize(raw)
-      synonym_map[[locale, normalized]] || synonym_map[[nil, normalized]] || synonym_map[["ja", normalized]] || normalized
+      synonym_map[[ locale, normalized ]] || synonym_map[[ nil, normalized ]] || synonym_map[[ "ja", normalized ]] || normalized
     end
   end
 end

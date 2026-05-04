@@ -2,11 +2,11 @@ require "test_helper"
 
 class StapleTest < ActiveSupport::TestCase
   test "valid with name_ja" do
-    assert Staple.new(name_ja: "米").valid?
+    assert Staple.new(source_id: 10, name_ja: "米").valid?
   end
 
   test "associations and polymorphic access" do
-    staple = Staple.create!(name_ja: "ご飯")
+    staple = Staple.create!(source_id: 3, name_ja: "ご飯")
     ingredient = Ingredient.create!(name_en: "rice")
     cooking = CookingMethod.create!(name_en: "boiling")
     Tagging.create!(staple:, taggable: ingredient)

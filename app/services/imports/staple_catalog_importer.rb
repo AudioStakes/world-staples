@@ -47,9 +47,9 @@ module Imports
       end
 
       {
-        Form => ["form", :name_en], Shape => ["shape", :name_en], ProcessingMethod => ["processing", :name_en],
-        CookingMethod => ["cooking_method", :name_en], Texture => ["texture", :name_en],
-        ServingStyle => ["served_with", :name_en], StapleLevel => ["staple_level", :code], SearchKeyword => ["search_keywords", :keyword]
+        Form => [ "form", :name_en ], Shape => [ "shape", :name_en ], ProcessingMethod => [ "processing", :name_en ],
+        CookingMethod => [ "cooking_method", :name_en ], Texture => [ "texture", :name_en ],
+        ServingStyle => [ "served_with", :name_en ], StapleLevel => [ "staple_level", :code ], SearchKeyword => [ "search_keywords", :keyword ]
       }.each do |klass, (column, key)|
         split(row[column]).each { |value| tag(staple, klass.find_or_create_by!(key => value), column) }
       end

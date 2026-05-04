@@ -65,7 +65,6 @@ class CreateStapleCatalogFoundation < ActiveRecord::Migration[8.1]
       t.timestamps
     end
     add_index :regions, :name_en, unique: true
-    add_index :regions, :parent_region_id
 
     create_table :country_areas do |t|
       t.string :name_en, null: false
@@ -75,7 +74,6 @@ class CreateStapleCatalogFoundation < ActiveRecord::Migration[8.1]
       t.timestamps
     end
     add_index :country_areas, :name_en, unique: true
-    add_index :country_areas, :region_id
 
     create_table :staple_levels do |t|
       t.string :code, null: false
