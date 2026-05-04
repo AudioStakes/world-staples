@@ -17,6 +17,8 @@ class Imports::StapleCatalogImporterTest < ActiveSupport::TestCase
     assert_includes idli.processing_methods.map(&:name_en), "発酵"
     assert_includes idli.cooking_methods.map(&:name_en), "蒸す"
     assert_equal 3, idli.source_id
+    assert idli.staple_aliases.exists?(kind: "similar_food", name: "ドーサ")
+    assert_not SearchTerm.exists?(staple: idli, term: "ドーサ", source_type: "StapleAlias")
 
     japan = CountryArea.find_by!(name_en: "Japan")
     assert_equal "East Asia", japan.region.name_en
@@ -50,6 +52,26 @@ class Imports::StapleCatalogImporterTest < ActiveSupport::TestCase
     Imports::StapleCatalogImporter.new(path: csv2).call
     assert_equal 1, Staple.where(source_id: 1).count
     assert_equal "白ご飯", Staple.find_by!(source_id: 1).name_ja
+  end
+
+
+  test "raises on blank/zero/non-integer id" do
+    base = File.read(Rails.root.join("test/fixtures/files/staple_catalog.csv"))
+
+    blank = Rails.root.join("tmp/staple_catalog_blank_id.csv")
+    File.write(blank, base.sub("1,ご飯", ",ご飯"))
+    e1 = assert_raises(ArgumentError) { Imports::StapleCatalogImporter.new(path: blank).call }
+    assert_match(/column id/, e1.message)
+
+    zero = Rails.root.join("tmp/staple_catalog_zero_id.csv")
+    File.write(zero, base.sub("1,ご飯", "0,ご飯"))
+    e2 = assert_raises(ArgumentError) { Imports::StapleCatalogImporter.new(path: zero).call }
+    assert_match(/column id/, e2.message)
+
+    nonint = Rails.root.join("tmp/staple_catalog_nonint_id.csv")
+    File.write(nonint, base.sub("1,ご飯", "abc,ご飯"))
+    e3 = assert_raises(ArgumentError) { Imports::StapleCatalogImporter.new(path: nonint).call }
+    assert_match(/column id/, e3.message)
   end
 
   test "raises on unknown fermented value" do

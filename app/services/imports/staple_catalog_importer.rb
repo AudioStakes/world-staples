@@ -17,7 +17,7 @@ module Imports
     private
 
     def import_row(row, row_number)
-      source_id = row["id"].to_i
+      source_id = parse_source_id(row["id"], row_number)
       staple = Staple.find_or_initialize_by(source_id: source_id)
       staple.assign_attributes(
         name_ja: row["name_ja"], name_en: row["name_en"], local_name: row["local_name"],
@@ -56,6 +56,17 @@ module Imports
 
       make_aliases(staple, row)
       SearchTerms::Rebuilder.call(staple)
+    end
+
+
+    def parse_source_id(value, row_number)
+      raw = value.to_s.strip
+      raise ArgumentError, "Invalid id at row #{row_number}, column id: #{value}" if raw.blank?
+
+      source_id = Integer(raw, exception: false)
+      raise ArgumentError, "Invalid id at row #{row_number}, column id: #{value}" if source_id.nil? || source_id <= 0
+
+      source_id
     end
 
     def parse_boolean(value, row_number)
