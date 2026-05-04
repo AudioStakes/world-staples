@@ -65,7 +65,7 @@ module SearchTerms
       case source_column.to_s
       when /_en\z/ then "en"
       when /_ja\z/ then "ja"
-      # nil is intentional: normalize_with_synonym falls back to locale-agnostic (nil-locale) synonyms
+        # nil is intentional: normalize_with_synonym falls back to locale-agnostic (nil-locale) synonyms
       end
     end
 
