@@ -19,4 +19,9 @@ class MasterModelsTest < ActiveSupport::TestCase
   test "region optional parent" do
     assert Region.new(name_en: "East Asia", parent_region: nil).valid?
   end
+
+  test "normalizes search keyword" do
+    keyword = SearchKeyword.create!(keyword: " ＲＩＣＥ ")
+    assert_equal "rice", keyword.normalized_keyword
+  end
 end
