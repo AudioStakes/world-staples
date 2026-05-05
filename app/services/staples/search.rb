@@ -22,7 +22,17 @@ module Staples
       return [] if limit&.<= 0
 
       query_terms = normalize_query_terms(query)
-      return [] if query_terms.empty?
+      if query_terms.empty?
+        return [] if filters.empty?
+
+        results = Staple.order(:name_ja).map do |staple|
+          Result.new(staple:, score: 0.0, matched_terms: [], matched_search_terms: [])
+        end
+
+        preload_filter_associations(results)
+        results = apply_filters(results)
+        return limit.nil? ? results : results.first(limit)
+      end
 
       terms = SearchTerm.where(normalized_term: query_terms).includes(:staple)
       bucket = Hash.new { |h, k| h[k] = { score: 0.0, matched_terms: Set.new, matched_search_terms: [] } }

@@ -6,3 +6,6 @@
 .cards { display: grid; gap: 0.8rem; }
 .card { border: 1px solid #ddd; border-radius: 8px; padding: 0.8rem; background: #fff; }
 .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 999px; background: #eef; }
+.active-filters { margin: 0.5rem 0 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.filter-chip { display: inline-block; padding: 0.15rem 0.5rem; border: 1px solid #ccd; border-radius: 999px; background: #f5f7ff; }
+.tag-list { padding-left: 1.2rem; }

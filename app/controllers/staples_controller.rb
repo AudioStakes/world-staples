@@ -5,7 +5,9 @@ class StaplesController < ApplicationController
     @query = search_params[:q].to_s.strip
     @filters = search_filters
 
-    if @query.blank?
+    load_filter_options
+
+    if @query.blank? && @filters.empty?
       @searched = false
       @results = Staple.order(:name_ja).limit(30)
     else
@@ -34,6 +36,13 @@ class StaplesController < ApplicationController
   end
 
   private
+
+
+  def load_filter_options
+    @region_options = Region.where.not(name_en: [ nil, "" ]).select(:name_en, :name_ja).order(:name_en).distinct.limit(100)
+    @ingredient_options = Ingredient.where.not(name_en: [ nil, "" ]).select(:name_en, :name_ja).order(:name_en).distinct.limit(100)
+    @cooking_method_options = CookingMethod.where.not(name_en: [ nil, "" ]).select(:name_en, :name_ja).order(:name_en).distinct.limit(100)
+  end
 
   def search_params
     params.permit(:q, :fermented, :region, :ingredient, :cooking_method)

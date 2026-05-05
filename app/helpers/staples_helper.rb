@@ -15,6 +15,17 @@ module StaplesHelper
     values.join(" / ")
   end
 
+  def tag_search_path(item)
+    case item
+    when Region
+      staples_path(region: item.name_en)
+    when Ingredient
+      staples_path(ingredient: item.name_en)
+    when CookingMethod
+      staples_path(cooking_method: item.name_en)
+    end
+  end
+
   def fermented_label(staple)
     staple.fermented ? "Fermented" : "Not fermented"
   end
