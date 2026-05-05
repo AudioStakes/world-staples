@@ -1,6 +1,6 @@
 class StaplesController < ApplicationController
   def index
-    @query = params[:q].to_s.strip
+    @query = search_params[:q].to_s.strip
     @filters = search_filters
 
     if @query.blank?
@@ -13,28 +13,44 @@ class StaplesController < ApplicationController
   end
 
   def show
-    @staple = Staple.find(params[:id])
+    @staple = Staple.includes(
+      :ingredients,
+      :ingredient_families,
+      :forms,
+      :shapes,
+      :processing_methods,
+      :cooking_methods,
+      :textures,
+      :regions,
+      :country_areas,
+      :serving_styles,
+      :staple_levels,
+      :search_keywords,
+      :staple_aliases
+    ).find(params[:id])
   end
 
   private
 
+  def search_params
+    params.permit(:q, :fermented, :region, :ingredient, :cooking_method)
+  end
+
   def search_filters
     {
       fermented: fermented_filter,
-      region: params[:region].to_s.strip.presence,
-      ingredient: params[:ingredient].to_s.strip.presence,
-      cooking_method: params[:cooking_method].to_s.strip.presence
+      region: search_params[:region].to_s.strip.presence,
+      ingredient: search_params[:ingredient].to_s.strip.presence,
+      cooking_method: search_params[:cooking_method].to_s.strip.presence
     }.compact
   end
 
   def fermented_filter
-    case params[:fermented].to_s
+    case search_params[:fermented].to_s
     when "true"
       true
     when "false"
       false
-    else
-      nil
     end
   end
 end

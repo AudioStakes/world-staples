@@ -2,15 +2,15 @@ module StaplesHelper
   def tag_label(tag)
     return "" if tag.blank?
 
-    candidates = [
+    values = [
       (tag.respond_to?(:name_ja) ? tag.name_ja : nil),
       (tag.respond_to?(:name_en) ? tag.name_en : nil),
       (tag.respond_to?(:keyword) ? tag.keyword : nil),
       (tag.respond_to?(:code) ? tag.code : nil),
       (tag.respond_to?(:name) ? tag.name : nil)
-    ]
+    ].compact_blank.uniq
 
-    candidates.compact_blank.first.to_s
+    values.join(" / ")
   end
 
   def fermented_label(staple)

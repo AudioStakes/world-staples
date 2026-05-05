@@ -1,3 +1,4 @@
+<main class="container staples-page">
 <h1><%= @staple.name_ja %></h1>
 
 <p><strong>English:</strong> <%= @staple.name_en.presence || "-" %></p>
@@ -41,3 +42,5 @@
 <% end %>
 
 <p><%= link_to "Back to search", staples_path %></p>
+
+</main>
