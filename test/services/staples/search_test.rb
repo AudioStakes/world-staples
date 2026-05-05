@@ -14,10 +14,61 @@ module Staples
       SearchKeyword.delete_all
     end
 
-    test "blank query returns empty results" do
+    test "blank query + no filters returns empty results" do
       assert_equal [], Search.call(nil)
       assert_equal [], Search.call("")
       assert_equal [], Search.call(" 　\t ")
+    end
+
+
+    test "blank query + fermented filter returns matching staples" do
+      fermented = create_staple!(name_ja: "イドゥリ", fermented: true)
+      create_staple!(name_ja: "ご飯", fermented: false)
+
+      results = Search.call("", filters: { fermented: true })
+      assert_equal [ fermented ], results.map(&:staple)
+      assert_equal 0.0, results.first.score
+      assert_equal [], results.first.matched_terms
+      assert_equal [], results.first.matched_search_terms
+    end
+
+    test "blank query + region filter returns matching staples" do
+      matched = create_staple!(name_ja: "蒸し飯")
+      other = create_staple!(name_ja: "焼きパン")
+      region = Region.create!(name_en: "East Asia", name_ja: "東アジア")
+      Tagging.create!(staple: matched, taggable: region, taggable_type: "Region")
+
+      results = Search.call("", filters: { region: "East Asia" })
+      assert_equal [ matched ], results.map(&:staple)
+      assert_not_includes results.map(&:staple), other
+    end
+
+    test "blank query + ingredient filter returns matching staples" do
+      matched = create_staple!(name_ja: "ビーフン")
+      ingredient = Ingredient.create!(name_en: "rice", name_ja: "米")
+      Tagging.create!(staple: matched, taggable: ingredient, taggable_type: "Ingredient")
+
+      results = Search.call("", filters: { ingredient: "rice" })
+      assert_equal [ matched ], results.map(&:staple)
+    end
+
+    test "blank query + cooking_method filter returns matching staples" do
+      matched = create_staple!(name_ja: "蒸しパン")
+      cm = CookingMethod.create!(name_en: "steamed", name_ja: "蒸す")
+      Tagging.create!(staple: matched, taggable: cm, taggable_type: "CookingMethod")
+
+      results = Search.call("", filters: { cooking_method: "steamed" })
+      assert_equal [ matched ], results.map(&:staple)
+    end
+
+    test "filter-only search respects limit" do
+      east_asia = Region.create!(name_en: "East Asia", name_ja: "東アジア")
+      3.times do |i|
+        staple = create_staple!(name_ja: "米#{i}", source_id: 77_000 + i)
+        Tagging.create!(staple:, taggable: east_asia, taggable_type: "Region")
+      end
+
+      assert_equal 2, Search.call("", filters: { region: "East Asia" }, limit: 2).size
     end
 
     test "simple name search hits staple" do

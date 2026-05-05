@@ -33,9 +33,14 @@
     <% if items.empty? %>
       <p>-</p>
     <% else %>
-      <ul>
+      <ul class="tag-list">
         <% items.each do |item| %>
-          <li><%= tag_label(item) %></li>
+          <% label = display_tag_label(item) %>
+          <% if (path = tag_search_path(item)) %>
+            <li><%= link_to label, path %></li>
+          <% else %>
+            <li><%= label %></li>
+          <% end %>
         <% end %>
       </ul>
     <% end %>
