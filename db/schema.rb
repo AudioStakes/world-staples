@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_04_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_05_010000) do
   create_table "cooking_methods", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -50,6 +50,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_000000) do
     t.index ["name_en"], name: "index_ingredient_families_on_name_en", unique: true
   end
 
+  create_table "ingredient_metrics", force: :cascade do |t|
+    t.string "calorie_basis"
+    t.decimal "calories_kcal_per_100g_basic", precision: 8, scale: 2
+    t.decimal "confidence", precision: 4, scale: 2
+    t.datetime "created_at", null: false
+    t.string "cultivation_ease"
+    t.string "ingredient_family"
+    t.integer "ingredient_id", null: false
+    t.string "ingredient_name_en", null: false
+    t.string "ingredient_name_ja"
+    t.text "note"
+    t.string "price_level"
+    t.string "production_volume_level"
+    t.text "production_volume_note"
+    t.text "representative_staples"
+    t.string "satiety_basis"
+    t.string "source_url"
+    t.string "storage_duration"
+    t.string "storage_method"
+    t.datetime "updated_at", null: false
+    t.index ["cultivation_ease"], name: "index_ingredient_metrics_on_cultivation_ease"
+    t.index ["ingredient_id"], name: "index_ingredient_metrics_on_ingredient_id"
+    t.index ["ingredient_name_en"], name: "index_ingredient_metrics_on_ingredient_name_en"
+    t.index ["price_level"], name: "index_ingredient_metrics_on_price_level"
+    t.index ["production_volume_level"], name: "index_ingredient_metrics_on_production_volume_level"
+  end
+
   create_table "ingredients", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -60,6 +87,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_000000) do
     t.index ["ingredient_family_id"], name: "index_ingredients_on_ingredient_family_id"
     t.index ["name_en"], name: "index_ingredients_on_name_en", unique: true
     t.index ["name_ja"], name: "index_ingredients_on_name_ja"
+  end
+
+  create_table "metric_sources", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "license_or_access_note"
+    t.string "metric_category"
+    t.string "source_name", null: false
+    t.string "source_url"
+    t.datetime "updated_at", null: false
+    t.text "use_note"
+    t.index ["metric_category"], name: "index_metric_sources_on_metric_category"
+    t.index ["source_name"], name: "index_metric_sources_on_source_name", unique: true
   end
 
   create_table "processing_methods", force: :cascade do |t|
@@ -149,6 +188,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_000000) do
     t.index ["code"], name: "index_staple_levels_on_code", unique: true
   end
 
+  create_table "staple_metrics", force: :cascade do |t|
+    t.string "calorie_basis"
+    t.decimal "calories_kcal_per_100g", precision: 8, scale: 2
+    t.datetime "created_at", null: false
+    t.string "cultivation_ease"
+    t.string "deliciousness_level"
+    t.decimal "metrics_confidence", precision: 4, scale: 2
+    t.text "metrics_note"
+    t.string "metrics_source_url"
+    t.string "popularity_level"
+    t.string "price_level"
+    t.text "production_volume_note"
+    t.string "satiety_level"
+    t.integer "staple_id", null: false
+    t.string "storage_duration"
+    t.string "storage_method"
+    t.string "sweetness_level"
+    t.string "taste_profile"
+    t.datetime "updated_at", null: false
+    t.index ["popularity_level"], name: "index_staple_metrics_on_popularity_level"
+    t.index ["price_level"], name: "index_staple_metrics_on_price_level"
+    t.index ["satiety_level"], name: "index_staple_metrics_on_satiety_level"
+    t.index ["staple_id"], name: "index_staple_metrics_on_staple_id"
+    t.index ["storage_duration"], name: "index_staple_metrics_on_storage_duration"
+  end
+
   create_table "staples", force: :cascade do |t|
     t.string "category"
     t.decimal "confidence", precision: 4, scale: 2
@@ -207,9 +272,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_000000) do
   end
 
   add_foreign_key "country_areas", "regions"
+  add_foreign_key "ingredient_metrics", "ingredients"
   add_foreign_key "ingredients", "ingredient_families"
   add_foreign_key "regions", "regions", column: "parent_region_id"
   add_foreign_key "search_terms", "staples"
   add_foreign_key "staple_aliases", "staples"
+  add_foreign_key "staple_metrics", "staples"
   add_foreign_key "taggings", "staples"
 end

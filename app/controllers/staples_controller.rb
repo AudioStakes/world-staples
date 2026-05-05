@@ -1,5 +1,5 @@
 class StaplesController < ApplicationController
-  SEARCH_RESULT_PRELOADS = [ :regions, :country_areas, :ingredients, :cooking_methods ].freeze
+  SEARCH_RESULT_PRELOADS = [ :regions, :country_areas, :ingredients, :cooking_methods, :staple_metric ].freeze
 
   def index
     @query = search_params[:q].to_s.strip
@@ -41,6 +41,10 @@ class StaplesController < ApplicationController
     @region_options = select_filter_records(Region)
     @ingredient_options = select_filter_records(Ingredient)
     @cooking_method_options = select_filter_records(CookingMethod)
+    @price_level_options = StapleMetric.where.not(price_level: [ nil, "" ]).distinct.order(:price_level).pluck(:price_level)
+    @satiety_level_options = StapleMetric.where.not(satiety_level: [ nil, "" ]).distinct.order(:satiety_level).pluck(:satiety_level)
+    @storage_duration_options = StapleMetric.where.not(storage_duration: [ nil, "" ]).distinct.order(:storage_duration).pluck(:storage_duration)
+    @popularity_level_options = StapleMetric.where.not(popularity_level: [ nil, "" ]).distinct.order(:popularity_level).pluck(:popularity_level)
   end
 
   def select_filter_records(klass)
@@ -49,7 +53,7 @@ class StaplesController < ApplicationController
   end
 
   def search_params
-    params.permit(:q, :fermented, :region, :ingredient, :cooking_method)
+    params.permit(:q, :fermented, :region, :ingredient, :cooking_method, :price_level, :satiety_level, :storage_duration, :popularity_level)
   end
 
   def search_filters
@@ -57,7 +61,11 @@ class StaplesController < ApplicationController
       fermented: fermented_filter,
       region: search_params[:region].to_s.strip.presence,
       ingredient: search_params[:ingredient].to_s.strip.presence,
-      cooking_method: search_params[:cooking_method].to_s.strip.presence
+      cooking_method: search_params[:cooking_method].to_s.strip.presence,
+      price_level: search_params[:price_level].to_s.strip.presence,
+      satiety_level: search_params[:satiety_level].to_s.strip.presence,
+      storage_duration: search_params[:storage_duration].to_s.strip.presence,
+      popularity_level: search_params[:popularity_level].to_s.strip.presence
     }.compact
   end
 

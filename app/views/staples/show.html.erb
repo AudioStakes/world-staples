@@ -10,6 +10,15 @@
   <p><%= link_to "Source URL", source_url, target: "_blank", rel: "noopener" %></p>
 <% end %>
 
+<% metric = @staple.staple_metric %>
+<section>
+  <h2>Staple metrics</h2>
+  <p><strong>Price level:</strong> <%= metric&.price_level.presence || "-" %></p>
+  <p><strong>Cultivation ease:</strong> <%= metric&.cultivation_ease.presence || "-" %></p>
+  <p><strong>Satiety level:</strong> <%= metric&.satiety_level.presence || "-" %></p>
+  <p><strong>Calories:</strong> <%= metric&.calories_kcal_per_100g || "-" %> <%= metric&.calorie_basis.presence || "" %></p>
+</section>
+
 <% sections = {
   "Ingredients" => @staple.ingredients,
   "Ingredient families" => @staple.ingredient_families,
