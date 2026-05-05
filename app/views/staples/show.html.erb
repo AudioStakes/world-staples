@@ -1,0 +1,43 @@
+<h1><%= @staple.name_ja %></h1>
+
+<p><strong>English:</strong> <%= @staple.name_en.presence || "-" %></p>
+<p><strong>Local name:</strong> <%= @staple.local_name.presence || "-" %></p>
+<p><span class="badge"><%= fermented_label(@staple) %></span></p>
+<p><%= @staple.description.presence || "-" %></p>
+<p><strong>Confidence:</strong> <%= @staple.confidence.presence || "-" %> / <strong>Review status:</strong> <%= @staple.review_status.presence || "-" %></p>
+<% if (source_url = safe_source_url(@staple)) %>
+  <p><%= link_to "Source URL", source_url, target: "_blank", rel: "noopener" %></p>
+<% end %>
+
+<% sections = {
+  "Ingredients" => @staple.ingredients,
+  "Ingredient families" => @staple.ingredient_families,
+  "Forms" => @staple.forms,
+  "Shapes" => @staple.shapes,
+  "Processing methods" => @staple.processing_methods,
+  "Cooking methods" => @staple.cooking_methods,
+  "Textures" => @staple.textures,
+  "Regions" => @staple.regions,
+  "Country areas" => @staple.country_areas,
+  "Serving styles" => @staple.serving_styles,
+  "Staple levels" => @staple.staple_levels,
+  "Search keywords" => @staple.search_keywords,
+  "Aliases" => @staple.staple_aliases
+} %>
+
+<% sections.each do |title, collection| %>
+  <section>
+    <h2><%= title %></h2>
+    <% if collection.any? %>
+      <ul>
+        <% collection.each do |item| %>
+          <li><%= tag_label(item) %></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>-</p>
+    <% end %>
+  </section>
+<% end %>
+
+<p><%= link_to "Back to search", staples_path %></p>
