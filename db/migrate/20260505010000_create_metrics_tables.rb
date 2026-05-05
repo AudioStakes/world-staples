@@ -1,7 +1,7 @@
 class CreateMetricsTables < ActiveRecord::Migration[8.1]
   def change
     create_table :staple_metrics do |t|
-      t.references :staple, null: false, foreign_key: true
+      t.references :staple, null: false, foreign_key: true, index: false
       t.text :production_volume_note
       t.string :price_level
       t.string :cultivation_ease
@@ -19,13 +19,14 @@ class CreateMetricsTables < ActiveRecord::Migration[8.1]
       t.text :metrics_note
       t.timestamps
     end
+    add_index :staple_metrics, :staple_id, unique: true
     add_index :staple_metrics, :price_level
     add_index :staple_metrics, :satiety_level
     add_index :staple_metrics, :storage_duration
     add_index :staple_metrics, :popularity_level
 
     create_table :ingredient_metrics do |t|
-      t.references :ingredient, null: false, foreign_key: true
+      t.references :ingredient, null: false, foreign_key: true, index: false
       t.string :ingredient_name_en, null: false
       t.string :ingredient_name_ja
       t.string :ingredient_family
@@ -44,6 +45,7 @@ class CreateMetricsTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
+    add_index :ingredient_metrics, :ingredient_id, unique: true
     add_index :ingredient_metrics, :ingredient_name_en
     add_index :ingredient_metrics, :production_volume_level
     add_index :ingredient_metrics, :price_level

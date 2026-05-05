@@ -39,8 +39,8 @@ module StaplesHelper
     staple.fermented ? "Fermented" : "Not fermented"
   end
 
-  def safe_source_url(staple)
-    url = staple.source_url.to_s
+  def safe_source_url(record, attribute = :source_url)
+    url = record.public_send(attribute).to_s
     return if url.blank?
 
     uri = URI.parse(url)
