@@ -1,14 +1,17 @@
 class StaplesController < ApplicationController
+  SEARCH_RESULT_PRELOADS = [ :regions, :country_areas, :ingredients, :cooking_methods ].freeze
+
   def index
     @query = search_params[:q].to_s.strip
     @filters = search_filters
 
     if @query.blank?
       @searched = false
-      @results = Staple.includes(:regions, :country_areas, :ingredients, :cooking_methods).order(:name_ja).limit(30)
+      @results = Staple.order(:name_ja).limit(30)
     else
       @searched = true
       @results = Staples::Search.call(@query, limit: 50, filters: @filters)
+      preload_search_result_associations(@results)
     end
   end
 
@@ -52,5 +55,12 @@ class StaplesController < ApplicationController
     when "false"
       false
     end
+  end
+
+  def preload_search_result_associations(results)
+    staples = results.map(&:staple)
+    return if staples.empty?
+
+    ActiveRecord::Associations::Preloader.new(records: staples, associations: SEARCH_RESULT_PRELOADS).call
   end
 end

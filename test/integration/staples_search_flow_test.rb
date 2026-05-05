@@ -72,4 +72,22 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Ingredients"
     assert_includes response.body, "米"
   end
+  test "search results display related tags" do
+    staple = Staple.create!(name_ja: "アレパ", name_en: "arepa", source_id: 7)
+    ingredient = Ingredient.create!(name_ja: "トウモロコシ", name_en: "corn")
+    region = Region.create!(name_ja: "ラテンアメリカ", name_en: "Latin America")
+    cooking_method = CookingMethod.create!(name_ja: "焼く", name_en: "grilled")
+
+    Tagging.create!(staple:, taggable: ingredient, taggable_type: "Ingredient")
+    Tagging.create!(staple:, taggable: region, taggable_type: "Region")
+    Tagging.create!(staple:, taggable: cooking_method, taggable_type: "CookingMethod")
+    SearchTerms::Rebuilder.call(staple)
+
+    get staples_path, params: { q: "アレパ" }
+
+    assert_response :success
+    assert_includes response.body, "トウモロコシ"
+    assert_includes response.body, "ラテンアメリカ"
+    assert_includes response.body, "焼く"
+  end
 end

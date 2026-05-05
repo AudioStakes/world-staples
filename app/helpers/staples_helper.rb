@@ -1,3 +1,5 @@
+require "uri"
+
 module StaplesHelper
   def tag_label(tag)
     return "" if tag.blank?

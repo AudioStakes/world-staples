@@ -27,16 +27,17 @@
 } %>
 
 <% sections.each do |title, collection| %>
+  <% items = collection.to_a %>
   <section>
     <h2><%= title %></h2>
-    <% if collection.any? %>
+    <% if items.empty? %>
+      <p>-</p>
+    <% else %>
       <ul>
-        <% collection.each do |item| %>
+        <% items.each do |item| %>
           <li><%= tag_label(item) %></li>
         <% end %>
       </ul>
-    <% else %>
-      <p>-</p>
     <% end %>
   </section>
 <% end %>
