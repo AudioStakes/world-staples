@@ -14,15 +14,15 @@
   </div>
   <div>
     <%= f.label :region, "Region" %>
-    <%= f.select :region, [["Any region", ""]] + @region_options.map { |region| [tag_label(region).presence || region.name_en, region.name_en] }, { selected: params[:region] } %>
+    <%= f.select :region, [["Any region", ""]] + @region_options.map { |region| [filter_option_label(region), region.name_en] }, { selected: params[:region] } %>
   </div>
   <div>
     <%= f.label :ingredient, "Ingredient" %>
-    <%= f.select :ingredient, [["Any ingredient", ""]] + @ingredient_options.map { |ingredient| [tag_label(ingredient).presence || ingredient.name_en, ingredient.name_en] }, { selected: params[:ingredient] } %>
+    <%= f.select :ingredient, [["Any ingredient", ""]] + @ingredient_options.map { |ingredient| [filter_option_label(ingredient), ingredient.name_en] }, { selected: params[:ingredient] } %>
   </div>
   <div>
     <%= f.label :cooking_method, "Cooking method" %>
-    <%= f.select :cooking_method, [["Any cooking method", ""]] + @cooking_method_options.map { |cooking_method| [tag_label(cooking_method).presence || cooking_method.name_en, cooking_method.name_en] }, { selected: params[:cooking_method] } %>
+    <%= f.select :cooking_method, [["Any cooking method", ""]] + @cooking_method_options.map { |cooking_method| [filter_option_label(cooking_method), cooking_method.name_en] }, { selected: params[:cooking_method] } %>
   </div>
   <%= f.submit "Search" %>
 <% end %>
@@ -31,7 +31,7 @@
   <p class="active-filters">
     <strong>Filters:</strong>
     <% @filters.each do |key, value| %>
-      <span class="filter-chip"><%= key.to_s.humanize %> = <%= value %></span>
+      <span class="filter-chip"><%= key.to_s.humanize %> = <%= key == :fermented ? (value ? "Fermented" : "Not fermented") : value %></span>
     <% end %>
     <%= link_to "Clear filters", staples_path(q: @query.presence) %>
   </p>

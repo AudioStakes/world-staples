@@ -15,6 +15,15 @@ module StaplesHelper
     values.join(" / ")
   end
 
+
+  def filter_option_label(item)
+    tag_label(item).presence || item.name_en.to_s
+  end
+
+  def display_tag_label(item)
+    tag_label(item).presence || item.name_en.to_s.presence || item.to_s
+  end
+
   def tag_search_path(item)
     case item
     when Region

@@ -37,11 +37,15 @@ class StaplesController < ApplicationController
 
   private
 
-
   def load_filter_options
-    @region_options = Region.where.not(name_en: [ nil, "" ]).select(:name_en, :name_ja).order(:name_en).distinct.limit(100)
-    @ingredient_options = Ingredient.where.not(name_en: [ nil, "" ]).select(:name_en, :name_ja).order(:name_en).distinct.limit(100)
-    @cooking_method_options = CookingMethod.where.not(name_en: [ nil, "" ]).select(:name_en, :name_ja).order(:name_en).distinct.limit(100)
+    @region_options = select_filter_records(Region)
+    @ingredient_options = select_filter_records(Ingredient)
+    @cooking_method_options = select_filter_records(CookingMethod)
+  end
+
+  def select_filter_records(klass)
+    ids = klass.where.not(name_en: [ nil, "" ]).order(:name_en).distinct.limit(100).pluck(:id)
+    klass.where(id: ids).order(:name_en)
   end
 
   def search_params

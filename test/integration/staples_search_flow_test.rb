@@ -11,6 +11,55 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     CookingMethod.delete_all
   end
 
+  test "root route points to staples index" do
+    get "/"
+    assert_response :success
+    assert_includes response.body, "World Staples"
+  end
+
+  test "index returns success and blank index shows browse staples" do
+    Staple.create!(name_ja: "ご飯", source_id: 1)
+
+    get staples_path
+
+    assert_response :success
+    assert_includes response.body, "Browse staples"
+  end
+
+  test "search query shows result" do
+    staple = Staple.create!(name_ja: "イドゥリ", name_en: "idli", fermented: true, source_id: 2)
+    SearchTerms::Rebuilder.call(staple)
+
+    get staples_path, params: { q: "イドゥリ" }
+
+    assert_response :success
+    assert_includes response.body, "results for"
+    assert_includes response.body, "イドゥリ"
+  end
+
+  test "search query with no matches shows no results" do
+    staple = Staple.create!(name_ja: "ご飯", source_id: 3)
+    SearchTerms::Rebuilder.call(staple)
+
+    get staples_path, params: { q: "不存在" }
+
+    assert_response :success
+    assert_includes response.body, "No staples found"
+  end
+
+  test "fermented filter works through controller params" do
+    fermented = Staple.create!(name_ja: "イドゥリ", fermented: true, source_id: 4)
+    plain = Staple.create!(name_ja: "ご飯", fermented: false, source_id: 5)
+    SearchTerm.create!(staple: fermented, term: "rice", normalized_term: "rice", source_type: "Staple", source_id: fermented.id, source_column: "name_ja", weight: 1)
+    SearchTerm.create!(staple: plain, term: "rice", normalized_term: "rice", source_type: "Staple", source_id: plain.id, source_column: "name_ja", weight: 1)
+
+    get staples_path, params: { q: "rice", fermented: "true" }
+
+    assert_response :success
+    assert_includes response.body, "イドゥリ"
+    assert_not_includes response.body, "ご飯"
+  end
+
   test "index renders region/ingredient/cooking_method select options" do
     Region.create!(name_en: "East Asia", name_ja: "東アジア")
     Ingredient.create!(name_en: "rice", name_ja: "米")
@@ -29,8 +78,8 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "q blank + region select param shows matching results" do
-    matched = Staple.create!(name_ja: "蒸し飯", source_id: 1)
-    other = Staple.create!(name_ja: "焼きパン", source_id: 2)
+    matched = Staple.create!(name_ja: "蒸し飯", source_id: 6)
+    other = Staple.create!(name_ja: "焼きパン", source_id: 7)
     east_asia = Region.create!(name_en: "East Asia", name_ja: "東アジア")
     europe = Region.create!(name_en: "Europe", name_ja: "ヨーロッパ")
     Tagging.create!(staple: matched, taggable: east_asia, taggable_type: "Region")
@@ -44,8 +93,8 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "q blank + ingredient select param shows matching results" do
-    matched = Staple.create!(name_ja: "ビーフン", source_id: 3)
-    other = Staple.create!(name_ja: "うどん", source_id: 4)
+    matched = Staple.create!(name_ja: "ビーフン", source_id: 8)
+    other = Staple.create!(name_ja: "うどん", source_id: 9)
     rice = Ingredient.create!(name_en: "rice", name_ja: "米")
     wheat = Ingredient.create!(name_en: "wheat", name_ja: "小麦")
     Tagging.create!(staple: matched, taggable: rice, taggable_type: "Ingredient")
@@ -59,8 +108,8 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "q blank + cooking_method select param shows matching results" do
-    matched = Staple.create!(name_ja: "蒸しパン", source_id: 5)
-    other = Staple.create!(name_ja: "焼きパン", source_id: 6)
+    matched = Staple.create!(name_ja: "蒸しパン", source_id: 10)
+    other = Staple.create!(name_ja: "焼きパン", source_id: 11)
     steamed = CookingMethod.create!(name_en: "steamed", name_ja: "蒸す")
     baked = CookingMethod.create!(name_en: "baked", name_ja: "焼く")
     Tagging.create!(staple: matched, taggable: steamed, taggable_type: "CookingMethod")
@@ -98,8 +147,21 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'href="/staples?q=rice"'
   end
 
+  test "show returns success and displays staple name and related tags" do
+    staple = Staple.create!(name_ja: "ビーフン", name_en: "rice noodles", source_id: 12)
+    ingredient = Ingredient.create!(name_ja: "米", name_en: "rice")
+    Tagging.create!(staple:, taggable: ingredient, taggable_type: "Ingredient")
+
+    get staple_path(staple)
+
+    assert_response :success
+    assert_includes response.body, "ビーフン"
+    assert_includes response.body, "Ingredients"
+    assert_includes response.body, "米"
+  end
+
   test "show page region/ingredient/cooking_method tags link back to search" do
-    staple = Staple.create!(name_ja: "アレパ", source_id: 7)
+    staple = Staple.create!(name_ja: "アレパ", source_id: 13)
     region = Region.create!(name_ja: "ラテンアメリカ", name_en: "Latin America")
     ingredient = Ingredient.create!(name_ja: "トウモロコシ", name_en: "corn")
     cooking_method = CookingMethod.create!(name_ja: "焼く", name_en: "grilled")
@@ -110,8 +172,8 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     get staple_path(staple)
 
     assert_response :success
-    assert_includes response.body, "href=\"/staples?region=Latin+America\""
-    assert_includes response.body, "href=\"/staples?ingredient=corn\""
-    assert_includes response.body, "href=\"/staples?cooking_method=grilled\""
+    assert_includes response.body, 'href="/staples?region=Latin+America"'
+    assert_includes response.body, 'href="/staples?ingredient=corn"'
+    assert_includes response.body, 'href="/staples?cooking_method=grilled"'
   end
 end

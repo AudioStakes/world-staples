@@ -35,7 +35,7 @@
     <% else %>
       <ul class="tag-list">
         <% items.each do |item| %>
-          <% label = tag_label(item).presence || item.try(:name_en).presence || item.try(:name).presence || "-" %>
+          <% label = display_tag_label(item) %>
           <% if (path = tag_search_path(item)) %>
             <li><%= link_to label, path %></li>
           <% else %>
