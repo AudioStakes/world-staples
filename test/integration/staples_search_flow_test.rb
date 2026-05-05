@@ -90,4 +90,41 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "ラテンアメリカ"
     assert_includes response.body, "焼く"
   end
+  test "region ingredient and cooking_method filters work through controller params" do
+    matched = Staple.create!(name_ja: "蒸し飯", source_id: 8)
+    other = Staple.create!(name_ja: "焼きパン", source_id: 9)
+
+    east_asia = Region.create!(name_en: "East Asia", name_ja: "東アジア")
+    europe = Region.create!(name_en: "Europe", name_ja: "ヨーロッパ")
+    rice = Ingredient.create!(name_en: "rice", name_ja: "米")
+    wheat = Ingredient.create!(name_en: "wheat", name_ja: "小麦")
+    steamed = CookingMethod.create!(name_en: "steamed", name_ja: "蒸す")
+    baked = CookingMethod.create!(name_en: "baked", name_ja: "焼く")
+
+    Tagging.create!(staple: matched, taggable: east_asia, taggable_type: "Region")
+    Tagging.create!(staple: matched, taggable: rice, taggable_type: "Ingredient")
+    Tagging.create!(staple: matched, taggable: steamed, taggable_type: "CookingMethod")
+
+    Tagging.create!(staple: other, taggable: europe, taggable_type: "Region")
+    Tagging.create!(staple: other, taggable: wheat, taggable_type: "Ingredient")
+    Tagging.create!(staple: other, taggable: baked, taggable_type: "CookingMethod")
+
+    SearchTerm.create!(staple: matched, term: "rice", normalized_term: "rice", source_type: "Staple", source_id: matched.id, source_column: "name_ja", weight: 1)
+    SearchTerm.create!(staple: other, term: "rice", normalized_term: "rice", source_type: "Staple", source_id: other.id, source_column: "name_ja", weight: 1)
+
+    get staples_path, params: { q: "rice", region: "East Asia" }
+    assert_response :success
+    assert_includes response.body, "蒸し飯"
+    assert_not_includes response.body, "焼きパン"
+
+    get staples_path, params: { q: "rice", ingredient: "米" }
+    assert_response :success
+    assert_includes response.body, "蒸し飯"
+    assert_not_includes response.body, "焼きパン"
+
+    get staples_path, params: { q: "rice", cooking_method: "蒸す" }
+    assert_response :success
+    assert_includes response.body, "蒸し飯"
+    assert_not_includes response.body, "焼きパン"
+  end
 end

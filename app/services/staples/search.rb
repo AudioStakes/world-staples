@@ -43,6 +43,7 @@ module Staples
         )
       end
 
+      preload_filter_associations(results)
       results = apply_filters(results)
       results = results.sort_by { |result| [ -result.score, result.staple.name_ja.to_s ] }
       limit.nil? ? results : results.first(limit)
@@ -77,6 +78,20 @@ module Staples
         staple = result.staple
         fermented_match?(staple) && region_match?(staple) && ingredient_match?(staple) && cooking_method_match?(staple)
       end
+    end
+
+
+    def preload_filter_associations(results)
+      associations = []
+      associations << :regions if filters[:region].present?
+      associations << :ingredients if filters[:ingredient].present?
+      associations << :cooking_methods if filters[:cooking_method].present?
+      return if associations.empty?
+
+      staples = results.map(&:staple)
+      return if staples.empty?
+
+      ActiveRecord::Associations::Preloader.new(records: staples, associations: associations).call
     end
 
     def fermented_match?(staple)
