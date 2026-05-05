@@ -1,0 +1,66 @@
+<main class="container staples-page">
+<h1>World Staples</h1>
+
+<p>Try: 米 発酵 蒸す / 小麦 麺 茹でる / トウモロコシ 粉 薄い 焼く メキシコ / キャッサバ 発酵 アフリカ 粒 / テフ 発酵 薄焼き 酸味</p>
+
+<%= form_with url: staples_path, method: :get, local: true, class: "search-form" do |f| %>
+  <div>
+    <%= f.label :q, "Query" %>
+    <%= f.text_field :q, value: @query %>
+  </div>
+  <div>
+    <%= f.label :fermented, "Fermented" %>
+    <%= f.select :fermented, [["Any", ""], ["Fermented", "true"], ["Not fermented", "false"]], selected: params[:fermented] %>
+  </div>
+  <div>
+    <%= f.label :region, "Region" %>
+    <%= f.text_field :region, value: params[:region] %>
+  </div>
+  <div>
+    <%= f.label :ingredient, "Ingredient" %>
+    <%= f.text_field :ingredient, value: params[:ingredient] %>
+  </div>
+  <div>
+    <%= f.label :cooking_method, "Cooking method" %>
+    <%= f.text_field :cooking_method, value: params[:cooking_method] %>
+  </div>
+  <%= f.submit "Search" %>
+<% end %>
+
+<% if @searched %>
+  <h2><%= @results.size %> results for "<%= @query %>"</h2>
+
+  <% if @results.empty? %>
+    <p>No staples found.</p>
+    <p>Try one of the examples above.</p>
+  <% else %>
+    <div class="cards">
+      <% @results.each do |result| %>
+        <% staple = result.staple %>
+        <article class="card">
+          <h3><%= link_to staple.name_ja, staple_path(staple) %></h3>
+          <p><strong>EN:</strong> <%= staple.name_en.presence || "-" %> / <strong>Local:</strong> <%= staple.local_name.presence || "-" %></p>
+          <p><strong>Score:</strong> <%= result.score.round(2) %></p>
+          <p><strong>Matched:</strong> <%= result.matched_terms.join(", ") %></p>
+          <p><%= staple.description.to_s.truncate(120) %></p>
+          <p>
+            <strong>Region:</strong> <%= staple.regions.map { |t| tag_label(t) }.join(", ").presence || "-" %> /
+            <strong>Country:</strong> <%= staple.country_areas.map { |t| tag_label(t) }.join(", ").presence || "-" %> /
+            <strong>Ingredient:</strong> <%= staple.ingredients.map { |t| tag_label(t) }.join(", ").presence || "-" %> /
+            <strong>Cooking:</strong> <%= staple.cooking_methods.map { |t| tag_label(t) }.join(", ").presence || "-" %>
+          </p>
+          <p><%= link_to "Show details", staple_path(staple) %></p>
+        </article>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <h2>Browse staples</h2>
+  <ul>
+    <% @results.each do |staple| %>
+      <li><%= link_to staple.name_ja, staple_path(staple) %> (<%= staple.name_en.presence || "-" %>)</li>
+    <% end %>
+  </ul>
+<% end %>
+
+</main>
