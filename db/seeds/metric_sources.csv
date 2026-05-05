@@ -1,0 +1,8 @@
+source_name,metric_category,source_url,use_note,license_or_access_note
+FAOSTAT Crops and livestock products,"production_volume, cultivation context",https://www.fao.org/faostat/,"Use for crop production quantity, yield, area harvested and producer-price context by commodity/country/year.",Public FAO database; verify terms before redistribution.
+FAO FPMA Tool,price,https://www.fao.org/giews/food-prices/price-tool/en/,"Use for domestic wholesale/retail staple food price series by country, market and commodity.",Public FAO tool; cite FAO/GIEWS.
+USDA FoodData Central,"calories, nutrition",https://fdc.nal.usda.gov/,Use for calories and nutrient values per 100g; distinguish raw/dry/cooked/prepared forms.,US government public data; verify citation format.
+USDA FSIS Shelf-Stable Food Safety,"storage_duration, storage_method",https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/shelf-stable-food,"Use for general shelf-stable storage guidance, not row-specific shelf-life guarantees.",USDA public guidance.
+IRRI Rice Knowledge / Rice Information Gateway,"rice production, rice context",https://www.irri.org/rice-information-gateway,Use for rice-specific statistics and background.,Cite IRRI where used.
+TasteAtlas,"popularity, subjective cuisine references",https://www.tasteatlas.com/,"Use only as a subjective/popularity proxy, not as an authoritative ranking.",Check terms; cite page-specific source.
+Wikipedia,starter food identification and local names,https://www.wikipedia.org/,Useful for bootstrapping names/regions; should be replaced or supplemented with stronger sources for production use.,CC BY-SA; cite page-specific URLs.
