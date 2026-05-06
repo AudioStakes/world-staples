@@ -86,7 +86,7 @@ module Staples
 
       results.select do |result|
         staple = result.staple
-        fermented_match?(staple) && region_match?(staple) && ingredient_match?(staple) && cooking_method_match?(staple)
+        fermented_match?(staple) && region_match?(staple) && ingredient_match?(staple) && cooking_method_match?(staple) && metric_match?(staple)
       end
     end
 
@@ -96,6 +96,7 @@ module Staples
       associations << :regions if filters[:region].present?
       associations << :ingredients if filters[:ingredient].present?
       associations << :cooking_methods if filters[:cooking_method].present?
+      associations << :staple_metric if %i[price_level satiety_level storage_duration popularity_level].any? { |key| filters[key].present? }
       return if associations.empty?
 
       staples = results.map(&:staple)
@@ -125,6 +126,16 @@ module Staples
       value = TextNormalizer.normalize(filters[:ingredient])
       staple.ingredients.any? do |ingredient|
         [ ingredient.name_en, ingredient.name_ja ].compact.map { |n| TextNormalizer.normalize(n) }.include?(value)
+      end
+    end
+
+    def metric_match?(staple)
+      metric = staple.staple_metric
+      return false if metric.nil? && %i[price_level satiety_level storage_duration popularity_level].any? { |key| filters[key].present? }
+      return true if metric.nil?
+
+      %i[price_level satiety_level storage_duration popularity_level].all? do |key|
+        filters[key].blank? || metric.public_send(key) == filters[key]
       end
     end
 

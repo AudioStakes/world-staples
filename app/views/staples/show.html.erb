@@ -10,6 +10,29 @@
   <p><%= link_to "Source URL", source_url, target: "_blank", rel: "noopener" %></p>
 <% end %>
 
+<% metric = @staple.staple_metric %>
+<section>
+  <h2>Staple metrics</h2>
+  <p><strong>Production volume note:</strong> <%= metric&.production_volume_note.presence || "-" %></p>
+  <p><strong>Price level:</strong> <%= metric&.price_level.presence || "-" %></p>
+  <p><strong>Cultivation ease:</strong> <%= metric&.cultivation_ease.presence || "-" %></p>
+  <p><strong>Satiety level:</strong> <%= metric&.satiety_level.presence || "-" %></p>
+  <p><strong>Calories:</strong> <%= metric&.calories_kcal_per_100g || "-" %> <%= metric&.calorie_basis.presence || "" %></p>
+  <p><strong>Deliciousness level:</strong> <%= metric&.deliciousness_level.presence || "-" %></p>
+  <p><strong>Sweetness level:</strong> <%= metric&.sweetness_level.presence || "-" %></p>
+  <p><strong>Taste profile:</strong> <%= metric&.taste_profile.presence || "-" %></p>
+  <p><strong>Storage duration:</strong> <%= metric&.storage_duration.presence || "-" %></p>
+  <p><strong>Storage method:</strong> <%= metric&.storage_method.presence || "-" %></p>
+  <p><strong>Popularity level:</strong> <%= metric&.popularity_level.presence || "-" %></p>
+  <p><strong>Metrics confidence:</strong> <%= metric&.metrics_confidence || "-" %></p>
+  <p><strong>Metrics note:</strong> <%= metric&.metrics_note.presence || "-" %></p>
+  <p><strong>Metrics source URL:</strong>
+    <% if (url = metric && safe_source_url(metric, :metrics_source_url)) %>
+      <%= link_to url, url, target: "_blank", rel: "noopener" %>
+    <% else %>-<% end %>
+  </p>
+</section>
+
 <% sections = {
   "Ingredients" => @staple.ingredients,
   "Ingredient families" => @staple.ingredient_families,

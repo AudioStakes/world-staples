@@ -2,6 +2,7 @@ class Staple < ApplicationRecord
   has_many :taggings, dependent: :destroy
   has_many :staple_aliases, dependent: :destroy
   has_many :search_terms, dependent: :destroy
+  has_one :staple_metric, dependent: :destroy
 
   has_many :ingredient_family_taggings, -> { where(taggable_type: "IngredientFamily") }, class_name: "Tagging"
   has_many :ingredient_families, through: :ingredient_family_taggings, source: :taggable, source_type: "IngredientFamily"

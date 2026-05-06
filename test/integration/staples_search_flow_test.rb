@@ -176,4 +176,55 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'href="/staples?ingredient=corn"'
     assert_includes response.body, 'href="/staples?cooking_method=grilled"'
   end
+
+  test "show page displays staple metrics" do
+    staple = Staple.create!(name_ja: "ご飯", source_id: 91)
+    StapleMetric.create!(staple: staple, price_level: "low", satiety_level: "high", calories_kcal_per_100g: 168.0)
+
+    get staple_path(staple)
+
+    assert_response :success
+    assert_includes response.body, "Staple metrics"
+    assert_includes response.body, "Price level"
+    assert_includes response.body, "168.0"
+  end
+
+  test "search result card displays metric snippet" do
+    staple = Staple.create!(name_ja: "米粉パン", source_id: 92)
+    SearchTerms::Rebuilder.call(staple)
+    StapleMetric.create!(staple: staple, price_level: "low", satiety_level: "medium", storage_duration: "short", popularity_level: "high")
+
+    get staples_path, params: { q: "米粉パン" }
+
+    assert_response :success
+    assert_includes response.body, "Metrics:"
+    assert_includes response.body, "price: low"
+  end
+end
+
+class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
+  test "metric dropdowns render and keep selection" do
+    staple = Staple.create!(name_ja: "米", source_id: 99)
+    StapleMetric.create!(staple: staple, price_level: "low", satiety_level: "high", storage_duration: "long", popularity_level: "high")
+
+    get staples_path
+    assert_includes response.body, 'name="price_level"'
+    assert_includes response.body, 'name="satiety_level"'
+    assert_includes response.body, 'name="storage_duration"'
+    assert_includes response.body, 'name="popularity_level"'
+
+    get staples_path, params: { price_level: "low" }
+    assert_includes response.body, 'option selected="selected" value="low"'
+  end
+
+  test "metric filter includes and excludes results" do
+    good = Staple.create!(name_ja: "A", source_id: 100)
+    bad = Staple.create!(name_ja: "B", source_id: 101)
+    StapleMetric.create!(staple: good, price_level: "low")
+    StapleMetric.create!(staple: bad, price_level: "high")
+
+    get staples_path, params: { price_level: "low" }
+    assert_includes response.body, "A"
+    assert_not_includes response.body, "B"
+  end
 end

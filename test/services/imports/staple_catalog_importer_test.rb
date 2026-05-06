@@ -80,4 +80,33 @@ class Imports::StapleCatalogImporterTest < ActiveSupport::TestCase
     error = assert_raises(ArgumentError) { Imports::StapleCatalogImporter.new(path: bad).call }
     assert_match(/fermented/, error.message)
   end
+
+
+  test "imports staple metrics and updates without duplication" do
+    path = Rails.root.join("tmp/staple_metrics_import.csv")
+    File.write(path, "id,name_ja,name_en,local_name,ingredient_family,base_ingredients,form,shape,processing,cooking_method,fermented,texture,region,country_area,served_with,staple_level,search_keywords,similar_foods,notes,source_url,confidence,review_status,price_level,satiety_level,storage_duration,popularity_level,calories_kcal_per_100g,metrics_confidence\n1,ご飯,rice,,grain,rice,bowl,solid,none,boiled,false,soft,asia,japan,plain,primary,rice,,note,https://a,0.8,starter,low,high,long,high,168.5,0.75\n")
+    importer = Imports::StapleCatalogImporter.new(path: path)
+    importer.call
+    metric = Staple.find_by!(source_id: 1).staple_metric
+    assert_equal 168.5, metric.calories_kcal_per_100g.to_f
+    assert_equal 0.75, metric.metrics_confidence.to_f
+    assert_equal "low", metric.price_level
+
+    File.write(path, File.read(path).sub("low", "medium"))
+    assert_no_difference("StapleMetric.count") { importer.call }
+    assert_equal "medium", Staple.find_by!(source_id: 1).staple_metric.price_level
+  end
+
+  test "partial metric csv does not clear missing columns" do
+    path1 = Rails.root.join("tmp/staple_metrics_partial1.csv")
+    path2 = Rails.root.join("tmp/staple_metrics_partial2.csv")
+    base = "id,name_ja,name_en,local_name,ingredient_family,base_ingredients,form,shape,processing,cooking_method,fermented,texture,region,country_area,served_with,staple_level,search_keywords,similar_foods,notes,source_url,confidence,review_status"
+    File.write(path1, "#{base},price_level,satiety_level\n1,ご飯,rice,,grain,rice,bowl,solid,none,boiled,false,soft,asia,japan,plain,primary,rice,,note,https://a,0.8,starter,low,high\n")
+    File.write(path2, "#{base},price_level\n1,ご飯,rice,,grain,rice,bowl,solid,none,boiled,false,soft,asia,japan,plain,primary,rice,,note,https://a,0.8,starter,medium\n")
+    Imports::StapleCatalogImporter.new(path: path1).call
+    Imports::StapleCatalogImporter.new(path: path2).call
+    metric = Staple.find_by!(source_id: 1).staple_metric
+    assert_equal "medium", metric.price_level
+    assert_equal "high", metric.satiety_level
+  end
 end
