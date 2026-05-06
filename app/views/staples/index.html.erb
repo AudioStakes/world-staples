@@ -57,7 +57,15 @@
           <p><strong>Score:</strong> <%= result.score.round(2) %></p>
           <p><strong>Matched:</strong> <%= result.matched_terms.join(", ") %></p>
           <p><%= staple.description.to_s.truncate(120) %></p>
-          <% if staple.staple_metric %><p><strong>Metrics:</strong> calories=<%= staple.staple_metric.calories_kcal_per_100g || "-" %>, price=<%= staple.staple_metric.price_level || "-" %>, satiety=<%= staple.staple_metric.satiety_level || "-" %>, storage=<%= staple.staple_metric.storage_duration || "-" %>, popularity=<%= staple.staple_metric.popularity_level || "-" %></p><% end %>
+          <% if (metric = staple.staple_metric) %>
+          <p><strong>Metrics:</strong>
+            calories: <%= metric.calories_kcal_per_100g || "-" %>,
+            price: <%= metric.price_level || "-" %>,
+            satiety: <%= metric.satiety_level || "-" %>,
+            storage: <%= metric.storage_duration || "-" %>,
+            popularity: <%= metric.popularity_level || "-" %>
+          </p>
+          <% end %>
           <p>
             <strong>Region:</strong> <%= staple.regions.map { |t| tag_label(t) }.join(", ").presence || "-" %> /
             <strong>Country:</strong> <%= staple.country_areas.map { |t| tag_label(t) }.join(", ").presence || "-" %> /

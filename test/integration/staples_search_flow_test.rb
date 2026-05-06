@@ -176,4 +176,28 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'href="/staples?ingredient=corn"'
     assert_includes response.body, 'href="/staples?cooking_method=grilled"'
   end
+
+  test "show page displays staple metrics" do
+    staple = Staple.create!(name_ja: "ご飯", source_id: 91)
+    StapleMetric.create!(staple: staple, price_level: "low", satiety_level: "high", calories_kcal_per_100g: 168.0)
+
+    get staple_path(staple)
+
+    assert_response :success
+    assert_includes response.body, "Staple metrics"
+    assert_includes response.body, "Price level"
+    assert_includes response.body, "168.0"
+  end
+
+  test "search result card displays metric snippet" do
+    staple = Staple.create!(name_ja: "米粉パン", source_id: 92)
+    SearchTerms::Rebuilder.call(staple)
+    StapleMetric.create!(staple: staple, price_level: "low", satiety_level: "medium", storage_duration: "short", popularity_level: "high")
+
+    get staples_path, params: { q: "米粉パン" }
+
+    assert_response :success
+    assert_includes response.body, "Metrics:"
+    assert_includes response.body, "price: low"
+  end
 end

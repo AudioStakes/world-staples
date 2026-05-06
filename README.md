@@ -1,32 +1,38 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Metrics data and seed behavior
 
-Things you may want to cover:
+This project seeds staple and metric data from CSV files under `db/seeds`.
 
-* Ruby version
+### Primary CSVs
+- `db/seeds/staple_catalog_300_with_metrics.csv` (preferred staple catalog)
+- `db/seeds/ingredient_metrics.csv`
+- `db/seeds/metric_sources.csv`
 
-* System dependencies
+Fallback:
+- If the 300-row file is missing, seeds fallback to `db/seeds/staple_catalog.csv`.
 
-* Configuration
+### Seed import order
+1. Staple catalog import (`staple_catalog_300_with_metrics.csv` preferred)
+2. Ingredient metrics import (`ingredient_metrics.csv` if present)
+3. Metric sources import (`metric_sources.csv` if present)
 
-* Database creation
+### Metric table roles
+- `staple_metrics`: per-staple metric attributes (calories, price, satiety, storage, popularity, etc.)
+- `ingredient_metrics`: per-ingredient baseline metrics and notes
+- `metric_sources`: metric provenance metadata
 
-* Database initialization
+### Data quality and limitations
+- Metrics are **starter estimates** and require ongoing review.
+- Calories depend on preparation method and stated basis.
+- Production/cultivation values are qualitative, not strict quantitative measurements.
+- Price/popularity/deliciousness are approximate guidance.
+- Importers are additive/update-oriented; taggings/aliases are not fully destructive-sync.
+- There is currently no admin moderation/review workflow UI.
 
-* How to run the test suite
+## Local setup / run
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-## Metrics seed CSVs
-- `db/seeds/staple_catalog_300_with_metrics.csv` is preferred.
-- `db/seeds/ingredient_metrics.csv` and `db/seeds/metric_sources.csv` are imported when present.
-- Seed order: staple catalog -> ingredient metrics -> metric sources.
-- Metrics are starter estimates and require review.
-- Source URLs are imported per staple metrics and source master rows.
-- Limitations: coarse qualitative production/cultivation; calories depend on basis/preparation; price/popularity/deliciousness are approximate; importer is additive/update-only for taggings/aliases; no admin review workflow yet.
+- `bin/rails db:setup`
+- `bin/rails db:seed`
+- `bin/rails server`
+- `bin/rails test`
