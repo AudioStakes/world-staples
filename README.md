@@ -36,3 +36,9 @@ Fallback:
 - `bin/rails db:seed`
 - `bin/rails server`
 - `bin/rails test`
+
+### Ingredient metrics matching policy
+- `ingredient_metrics.csv` imports only rows that match already-existing `Ingredient` records.
+- Missing ingredient rows are skipped and logged (including skip count) instead of creating metrics-only ingredients.
+- This avoids polluting search filter options with ingredients that cannot return staple hits.
+- Skipped rows should be resolved by improving staple catalog ingredient tokens or cleaning `ingredient_metrics.csv`.

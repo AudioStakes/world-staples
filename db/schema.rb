@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_05_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_06_090000) do
   create_table "cooking_methods", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -71,7 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_010000) do
     t.string "storage_method"
     t.datetime "updated_at", null: false
     t.index ["cultivation_ease"], name: "index_ingredient_metrics_on_cultivation_ease"
-    t.index ["ingredient_id"], name: "index_ingredient_metrics_on_ingredient_id"
+    t.index ["ingredient_id"], name: "index_ingredient_metrics_on_ingredient_id", unique: true
     t.index ["ingredient_name_en"], name: "index_ingredient_metrics_on_ingredient_name_en"
     t.index ["price_level"], name: "index_ingredient_metrics_on_price_level"
     t.index ["production_volume_level"], name: "index_ingredient_metrics_on_production_volume_level"
@@ -210,7 +210,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_010000) do
     t.index ["popularity_level"], name: "index_staple_metrics_on_popularity_level"
     t.index ["price_level"], name: "index_staple_metrics_on_price_level"
     t.index ["satiety_level"], name: "index_staple_metrics_on_satiety_level"
-    t.index ["staple_id"], name: "index_staple_metrics_on_staple_id"
+    t.index ["staple_id"], name: "index_staple_metrics_on_staple_id", unique: true
     t.index ["storage_duration"], name: "index_staple_metrics_on_storage_duration"
   end
 

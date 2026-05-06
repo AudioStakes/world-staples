@@ -201,3 +201,30 @@ class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "price: low"
   end
 end
+
+class StaplesSearchFlowTest < ActionDispatch::IntegrationTest
+  test "metric dropdowns render and keep selection" do
+    staple = Staple.create!(name_ja: "米", source_id: 99)
+    StapleMetric.create!(staple: staple, price_level: "low", satiety_level: "high", storage_duration: "long", popularity_level: "high")
+
+    get staples_path
+    assert_includes response.body, 'name="price_level"'
+    assert_includes response.body, 'name="satiety_level"'
+    assert_includes response.body, 'name="storage_duration"'
+    assert_includes response.body, 'name="popularity_level"'
+
+    get staples_path, params: { price_level: "low" }
+    assert_includes response.body, 'option selected="selected" value="low"'
+  end
+
+  test "metric filter includes and excludes results" do
+    good = Staple.create!(name_ja: "A", source_id: 100)
+    bad = Staple.create!(name_ja: "B", source_id: 101)
+    StapleMetric.create!(staple: good, price_level: "low")
+    StapleMetric.create!(staple: bad, price_level: "high")
+
+    get staples_path, params: { price_level: "low" }
+    assert_includes response.body, "A"
+    assert_not_includes response.body, "B"
+  end
+end

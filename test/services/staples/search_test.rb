@@ -197,3 +197,23 @@ module Staples
     end
   end
 end
+
+module Staples
+  class SearchTest < ActiveSupport::TestCase
+    test "metric filters work for blank and text query" do
+      with_metric = create_staple!(name_ja: "玄米")
+      without_metric = create_staple!(name_ja: "白米")
+      StapleMetric.create!(staple: with_metric, price_level: "low", satiety_level: "high", storage_duration: "long", popularity_level: "high")
+      [ with_metric, without_metric ].each do |staple|
+        SearchTerm.create!(staple:, term: "rice", normalized_term: "rice", source_type: "Staple", source_id: staple.id, source_column: "name_ja", weight: 1)
+      end
+
+      assert_equal [ with_metric ], Search.call("", filters: { price_level: "low" }).map(&:staple)
+      assert_equal [ with_metric ], Search.call("", filters: { satiety_level: "high" }).map(&:staple)
+      assert_equal [ with_metric ], Search.call("", filters: { storage_duration: "long" }).map(&:staple)
+      assert_equal [ with_metric ], Search.call("", filters: { popularity_level: "high" }).map(&:staple)
+      assert_equal [ with_metric ], Search.call("rice", filters: { price_level: "low" }).map(&:staple)
+      assert_equal [], Search.call("rice", filters: { price_level: "ultra" }).map(&:staple)
+    end
+  end
+end
