@@ -80,9 +80,8 @@ class Imports::StapleCatalogImporterTest < ActiveSupport::TestCase
     error = assert_raises(ArgumentError) { Imports::StapleCatalogImporter.new(path: bad).call }
     assert_match(/fermented/, error.message)
   end
-end
 
-class Imports::StapleCatalogImporterTest < ActiveSupport::TestCase
+
   test "imports staple metrics and updates without duplication" do
     path = Rails.root.join("tmp/staple_metrics_import.csv")
     File.write(path, "id,name_ja,name_en,local_name,ingredient_family,base_ingredients,form,shape,processing,cooking_method,fermented,texture,region,country_area,served_with,staple_level,search_keywords,similar_foods,notes,source_url,confidence,review_status,price_level,satiety_level,storage_duration,popularity_level,calories_kcal_per_100g,metrics_confidence\n1,ご飯,rice,,grain,rice,bowl,solid,none,boiled,false,soft,asia,japan,plain,primary,rice,,note,https://a,0.8,starter,low,high,long,high,168.5,0.75\n")

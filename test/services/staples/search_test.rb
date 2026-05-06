@@ -190,16 +190,7 @@ module Staples
       assert_empty Search.call("ドーサ")
     end
 
-    private
 
-    def create_staple!(name_ja:, name_en: nil, fermented: false, source_id: nil)
-      Staple.create!(name_ja:, name_en:, fermented:, source_id: source_id || rand(100_000..999_999))
-    end
-  end
-end
-
-module Staples
-  class SearchTest < ActiveSupport::TestCase
     test "metric filters work for blank and text query" do
       with_metric = create_staple!(name_ja: "玄米")
       without_metric = create_staple!(name_ja: "白米")
@@ -214,6 +205,12 @@ module Staples
       assert_equal [ with_metric ], Search.call("", filters: { popularity_level: "high" }).map(&:staple)
       assert_equal [ with_metric ], Search.call("rice", filters: { price_level: "low" }).map(&:staple)
       assert_equal [], Search.call("rice", filters: { price_level: "ultra" }).map(&:staple)
+    end
+
+    private
+
+    def create_staple!(name_ja:, name_en: nil, fermented: false, source_id: nil)
+      Staple.create!(name_ja:, name_en:, fermented:, source_id: source_id || rand(100_000..999_999))
     end
   end
 end
