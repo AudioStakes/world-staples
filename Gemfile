@@ -11,7 +11,7 @@ gem "activerecord", RAILS_VERSION
 gem "actionpack", RAILS_VERSION
 gem "actionview", RAILS_VERSION
 
-gem "sqlite3", "~> 2.9", ">= 2.9.3"
+gem "sqlite3", "~> 2.9"
 gem "puma", "~> 8.0", ">= 8.0.0"
 gem "bootsnap", "~> 1.23", ">= 1.23.0", require: false
 gem "csv"
