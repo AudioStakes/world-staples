@@ -19,7 +19,7 @@ gem "csv"
 group :development, :test do
   gem "debug", "~> 1.11", ">= 1.11.1", platforms: %i[mri windows], require: "debug/prelude"
   gem "bundler-audit", "~> 0.9", ">= 0.9.3", require: false
-  gem "brakeman", "~> 8.0", ">= 8.0.4", require: false
+  gem "brakeman", "~> 8.0", require: false
   gem "rubocop-rails-omakase", "~> 1.1", ">= 1.1.0", require: false
 end
 
